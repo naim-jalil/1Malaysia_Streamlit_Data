@@ -34,9 +34,10 @@ with tab1:
     # Count the occurrences of each age bin
     age_group_counts = analysis['AGE_BIN'].value_counts().sort_index()
     fig1 = px.bar(
-        x=age_group_counts.index,
-        y=age_group_counts.values,
-        labels={"x": "Age Group", "y": "Number of Cases",  "color": "Age Group"},
+        x=age_group_counts.values,
+        y=age_group_counts.index,
+        labels={"x": "Number of Cases",
+                "y": "Age Group",  "color": "Age Group"},
         title="COVID-19 Cases by Age Group",
         color=age_group_counts.index,
         color_discrete_sequence=px.colors.sequential.Viridis

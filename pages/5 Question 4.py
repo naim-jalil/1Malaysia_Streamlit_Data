@@ -19,10 +19,9 @@ df = filter(df)
 
 df = reverse_mapping(df)
 
-tab1, tab2 = st.tabs(["Chart", "Data Set"])
+tab1, tab2 = st.tabs(["Bar Chart", "Data Set"])
 
 with tab1:
-    st.subheader("Chart")
     # Filter deceased patients (assuming DATE_OF_DEATH is not NaN when a patient is deceased)
     deceased_patients = df[df["DATE_OF_DEATH"].notna()]
 
@@ -40,8 +39,8 @@ with tab1:
 
     # 🔹 Create bar chart
     fig = px.bar(disease_counts_df,
-                 x="Disease",
-                 y="Count",
+                 x="Count",
+                 y="Disease",
                  title="Common Diseases Among Deceased Patients",
                  labels={"Count": "Number of Deceased Patients",
                          "Disease": "Disease"},

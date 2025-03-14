@@ -13,7 +13,7 @@ st.title("How many patients required intubation?")
 df = pd.read_csv(os.path.join("assets", "mapped_data.csv"))
 df = filter(df)
 
-tab1, tab2 = st.tabs(["Chart", "Data Set"])
+tab1, tab2 = st.tabs(["Bar Chart", "Data Set"])
 
 analysis = df.copy()
 
@@ -27,16 +27,16 @@ analysis["AGE_GROUP"] = pd.cut(
     analysis["AGE"], bins=bins, labels=labels, right=False)
 
 with tab1:
-    st.subheader("Intubation Chart")
     # Count intubated patients
     intubated_counts = analysis["INTUBATED"].value_counts().reset_index()
     intubated_counts.columns = ["INTUBATED", "COUNT"]
 
     # Bar chart for patients requiring intubation
+    # Plotting the horizontal bar chart
     fig4 = px.bar(
         intubated_counts,
-        x="INTUBATED",
-        y="COUNT",
+        x="COUNT",
+        y="INTUBATED",
         labels={"INTUBATED": "Intubation Status",
                 "COUNT": "Number of Patients"},
         color="INTUBATED",

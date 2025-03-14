@@ -17,19 +17,15 @@ df = df.dropna(subset=["AGE"])  # Remove NaN ages
 df["AGE"] = df["AGE"].astype(int)
 
 # ---- DASHBOARD METRICS ----
-
 col1, col2, col3 = st.columns(3)
 
-# Total Cases
 with col1:
     st.metric("📝 Total Cases", f"{len(df):,}")
 
-# Total Hospitalized Cases
 with col2:
     total_hospitalized = df[df["HOSPITALIZED"] == "YES"].shape[0]
     st.metric("🏥 Total Hospitalized", f"{total_hospitalized:,}")
 
-# Male vs Female Count
 with col3:
     total_male = df[df["SEX"] == "MALE"].shape[0]
     total_female = df[df["SEX"] == "FEMALE"].shape[0]
@@ -39,12 +35,11 @@ with col3:
 st.sidebar.header("🔍 Filter Data")
 sex_filter = st.sidebar.multiselect(
     "Select Sex", df["SEX"].unique(), default=df["SEX"].unique())
-age_range = st.sidebar.slider("Select Age Range", int(df["AGE"].min()), int(df["AGE"].max()),
-                              (int(df["AGE"].min()), int(df["AGE"].max())))
+age_range = st.sidebar.slider("Select Age Range", int(df["AGE"].min()), int(
+    df["AGE"].max()), (int(df["AGE"].min()), int(df["AGE"].max())))
 outcome_filter = st.sidebar.selectbox(
     "Select Outcome", ["All"] + df["OUTCOME"].unique().tolist())
 
-# Apply filters
 filtered_df = df[df["SEX"].isin(sex_filter)]
 filtered_df = filtered_df[(filtered_df["AGE"] >= age_range[0]) & (
     filtered_df["AGE"] <= age_range[1])]
@@ -60,13 +55,13 @@ st.dataframe(filtered_df)
 st.divider()
 st.markdown("## 📊 Data Visualizations")
 
-# Create tabs for visualizations
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "👥 Gender Distribution",
     "🏥 Hospitalization Rate",
     "🩺 Outcome Distribution",
     "📅 Admission Months Count",
-    "☠️ Death Month Counts"
+    "☠️ Death Month Counts",
+    "📊 Comparative Analysis"
 ])
 
 # Gender Distribution Pie Chart
@@ -94,56 +89,60 @@ with tab3:
                   color="Outcome", color_discrete_sequence=["#4CAF50", "#FFA07A", "#4682B4"])
     st.plotly_chart(fig3, use_container_width=True)
 
-# Admission Months Count
+# Admission Months Count (Line Chart)
 with tab4:
-    st.subheader("📅 Admission Months Count (Bar Chart)")
-
+    st.subheader("📅 Admission Trends Over Time (Line Chart)")
     if "ADMISSION DATE" in df.columns:
-        df["ADMISSION_MONTH"] = pd.to_datetime(
-            df["ADMISSION DATE"], errors='coerce').dt.month
+        df["ADMISSION_DATETIME"] = pd.to_datetime(
+            df["ADMISSION DATE"], errors='coerce')
+        df["ADMISSION_YEAR"] = df["ADMISSION_DATETIME"].dt.year
+        df["ADMISSION_MONTH"] = df["ADMISSION_DATETIME"].dt.strftime("%b")
 
-        # Convert month numbers to month names
-        month_mapping = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
-                         7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"}
-        df["ADMISSION_MONTH"] = df["ADMISSION_MONTH"].map(month_mapping)
+        admission_counts = df.groupby(
+            ["ADMISSION_YEAR", "ADMISSION_MONTH"]).size().reset_index(name="Count")
 
-        admission_counts = df["ADMISSION_MONTH"].value_counts().reindex(
-            month_mapping.values(), fill_value=0)
+        month_order = ["Jan", "Feb", "Mar", "Apr", "May",
+                       "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        admission_counts["ADMISSION_MONTH"] = pd.Categorical(
+            admission_counts["ADMISSION_MONTH"], categories=month_order, ordered=True)
+        admission_counts = admission_counts.sort_values(
+            ["ADMISSION_YEAR", "ADMISSION_MONTH"])
 
-        fig4 = px.bar(
-            x=admission_counts.index,
-            y=admission_counts.values,
-            labels={"x": "Month", "y": "Number of Admissions"},
-            title="Admissions per Month",
-            color=admission_counts.index,
-            color_discrete_sequence=px.colors.sequential.Blues
-        )
+        fig4 = px.line(admission_counts, x="ADMISSION_MONTH", y="Count", color="ADMISSION_YEAR", labels={
+                       "ADMISSION_YEAR": "Year"}, title="Monthly Admission Trends Over the Years", markers=True)
         st.plotly_chart(fig4, use_container_width=True)
     else:
         st.warning("⚠️ 'ADMISSION DATE' column not found in dataset.")
 
-# Death Month Counts
+# Death Month Counts (Line Chart)
 with tab5:
-    st.subheader("☠️ Death Month Counts (Bar Chart)")
-
+    st.subheader("☠️ Death Trends Over Time (Line Chart)")
     if "DATE_OF_DEATH" in df.columns:
-        df["DEATH_MONTH"] = pd.to_datetime(
-            df["DATE_OF_DEATH"], errors='coerce').dt.month
+        df["DEATH_DATETIME"] = pd.to_datetime(
+            df["DATE_OF_DEATH"], errors='coerce')
+        df["DEATH_YEAR"] = df["DEATH_DATETIME"].dt.year
+        df["DEATH_MONTH"] = df["DEATH_DATETIME"].dt.strftime("%b")
 
-        # Convert month numbers to month names
-        df["DEATH_MONTH"] = df["DEATH_MONTH"].map(month_mapping)
+        death_counts = df.groupby(
+            ["DEATH_YEAR", "DEATH_MONTH"]).size().reset_index(name="Count")
 
-        death_counts = df["DEATH_MONTH"].value_counts().reindex(
-            month_mapping.values(), fill_value=0)
+        death_counts["DEATH_MONTH"] = pd.Categorical(
+            death_counts["DEATH_MONTH"], categories=month_order, ordered=True)
+        death_counts = death_counts.sort_values(["DEATH_YEAR", "DEATH_MONTH"])
 
-        fig5 = px.bar(
-            x=death_counts.index,
-            y=death_counts.values,
-            labels={"x": "Month", "y": "Number of Deaths"},
-            title="Deaths per Month",
-            color=death_counts.index,
-            color_discrete_sequence=px.colors.sequential.Reds
-        )
+        fig5 = px.line(death_counts, x="DEATH_MONTH", y="Count", color="DEATH_YEAR", labels={
+                       "DEATH_YEAR": "Year"}, title="Monthly Death Trends Over the Years", markers=True)
         st.plotly_chart(fig5, use_container_width=True)
     else:
         st.warning("⚠️ 'DATE_OF_DEATH' column not found in dataset.")
+
+# ---- NEW COMPARATIVE ANALYSIS TAB ----
+with tab6:
+    st.subheader("📊 Comparative Analysis & Trends")
+
+    # Age vs. Hospitalization Status (Box Plot)
+    st.markdown(
+        "### 🏥 Age Distribution of Hospitalized vs. Non-Hospitalized Cases")
+    fig6_1 = px.box(df, x="HOSPITALIZED", y="AGE", color="HOSPITALIZED",
+                    title="Age Distribution by Hospitalization Status")
+    st.plotly_chart(fig6_1, use_container_width=True)
