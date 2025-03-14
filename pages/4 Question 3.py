@@ -12,10 +12,12 @@ df = pd.read_csv(os.path.join("assets", "mapped_data.csv"))
 # Filter here
 df = filter(df)
 
+total_selected = len(df)
+st.toast(f"Total Selected Cases: {total_selected:,}")
+
 tab1, tab2 = st.tabs(["Bubble Chart", "Data Set"])
 
 with tab1:
-    total_selected = len(df)
     st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     # Select the relevant columns
     columns_of_interest = ['DIABETES', 'COPD', 'ASTHMA', 'INMUSUPR', 'HYPERTENSION',
@@ -54,6 +56,5 @@ with tab1:
 
 
 with tab2:
-    total_selected = len(df)
     st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     st.dataframe(df)

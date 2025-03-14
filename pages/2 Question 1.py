@@ -16,12 +16,12 @@ df = pd.read_csv(os.path.join("assets", "mapped_data.csv"))
 
 df = filter(df)
 
+total_selected = len(df)
+st.toast(f"Total Selected Cases: {total_selected:,}")
 
 tab1, tab2, tab3 = st.tabs(["Bar Chart", "Histogram", "Data Set"])
 
 with tab1:
-
-    total_selected = len(df)
 
     st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
 
@@ -50,7 +50,6 @@ with tab1:
 
 
 with tab2:
-    total_selected = len(df)
     st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
 
     fig2 = px.histogram(

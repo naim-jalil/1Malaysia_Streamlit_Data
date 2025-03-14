@@ -13,6 +13,9 @@ st.title("How many patients required intubation?")
 df = pd.read_csv(os.path.join("assets", "mapped_data.csv"))
 df = filter(df)
 
+total_selected = len(df)
+st.toast(f"Total Selected Cases: {total_selected:,}")
+
 tab1, tab2 = st.tabs(["Bar Chart", "Data Set"])
 
 analysis = df.copy()
@@ -27,7 +30,6 @@ analysis["AGE_GROUP"] = pd.cut(
     analysis["AGE"], bins=bins, labels=labels, right=False)
 
 with tab1:
-    total_selected = len(df)
     st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     # Count intubated patients
     intubated_counts = analysis["INTUBATED"].value_counts().reset_index()
@@ -48,6 +50,5 @@ with tab1:
 
 
 with tab2:
-    total_selected = len(df)
     st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     st.dataframe(df)
