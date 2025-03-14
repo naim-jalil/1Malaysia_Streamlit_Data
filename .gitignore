@@ -1,0 +1,6 @@
+.venv
+Questioins.ipynb
+
+*/__pycache__/*
+*/.ipynb_checkpoints/*
+*/.vscode
