@@ -15,6 +15,8 @@ df = filter(df)
 tab1, tab2 = st.tabs(["Bubble Chart", "Data Set"])
 
 with tab1:
+    total_selected = len(df)
+    st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     # Select the relevant columns
     columns_of_interest = ['DIABETES', 'COPD', 'ASTHMA', 'INMUSUPR', 'HYPERTENSION',
                            'CARDIOVASCULAR', 'OBESITY', 'CHRONIC_KIDNEY', 'TOBACCO', 'ICU']
@@ -52,5 +54,6 @@ with tab1:
 
 
 with tab2:
-    st.subheader("Data Set")
+    total_selected = len(df)
+    st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     st.dataframe(df)

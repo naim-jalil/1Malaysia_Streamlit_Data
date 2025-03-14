@@ -27,6 +27,8 @@ analysis["AGE_GROUP"] = pd.cut(
     analysis["AGE"], bins=bins, labels=labels, right=False)
 
 with tab1:
+    total_selected = len(df)
+    st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     # Count intubated patients
     intubated_counts = analysis["INTUBATED"].value_counts().reset_index()
     intubated_counts.columns = ["INTUBATED", "COUNT"]
@@ -46,5 +48,6 @@ with tab1:
 
 
 with tab2:
-    st.subheader("Data Set")
+    total_selected = len(df)
+    st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     st.dataframe(df)

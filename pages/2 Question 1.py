@@ -20,7 +20,11 @@ df = filter(df)
 tab1, tab2, tab3 = st.tabs(["Bar Chart", "Histogram", "Data Set"])
 
 with tab1:
-    st.subheader("Bar Chart")
+
+    total_selected = len(df)
+
+    st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
+
     analysis = df.copy()
     # Define the bins and labels
     bins = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -46,7 +50,8 @@ with tab1:
 
 
 with tab2:
-    st.subheader("Histogram")
+    total_selected = len(df)
+    st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
 
     fig2 = px.histogram(
         analysis,
@@ -60,5 +65,4 @@ with tab2:
     st.plotly_chart(fig2)
 
 with tab3:
-    st.subheader("Data Set")
     st.dataframe(df)

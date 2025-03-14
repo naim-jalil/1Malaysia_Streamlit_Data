@@ -22,6 +22,8 @@ df = reverse_mapping(df)
 tab1, tab2 = st.tabs(["Bar Chart", "Data Set"])
 
 with tab1:
+    total_selected = len(df)
+    st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     # Filter deceased patients (assuming DATE_OF_DEATH is not NaN when a patient is deceased)
     deceased_patients = df[df["DATE_OF_DEATH"].notna()]
 
@@ -53,7 +55,8 @@ with tab1:
     st.plotly_chart(fig)
 
 with tab2:
-    st.subheader("Data Set")
+    total_selected = len(df)
+    st.write(f"📌 **Total Selected Cases**: {total_selected:,}")
     st.dataframe(df)
 
 
